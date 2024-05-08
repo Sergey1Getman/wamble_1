@@ -1,4 +1,4 @@
-(ns homework1)
+(ns wamble-1.wamble-1)
 
 (def result (atom {:correct 0 :incorrect 0}))
 (defmacro =check [left right]
@@ -13,13 +13,23 @@
 
 
 ;; reduce examples
-(defn my-reduce [f init coll])
+(defn my-reduce [f init coll]
+  (if (empty? coll)
+    init
+    (my-reduce f (f init (first coll)) (rest coll))))
+(my-reduce + 0 [1 2 3 4])
 (=check (my-reduce + 0 [1 2 3 4]) 10)
 (=check (my-reduce str "" ["a" "b" "c"]) "abc")
 (=check (my-reduce + 0 (range 10000)) 49995000)
 
 ;; filter examples
-(defn my-filter [pred coll])
+(defn my-filter [pred coll]
+  (if (empty? coll)
+    coll
+    (if (pred (first coll))
+      (cons (first coll) (my-filter pred (rest coll)))
+      (my-filter pred (rest coll)))))
+
 (=check (my-filter even? [1 2 3 4 5 6]) [2 4 6])
 (=check (my-filter #(> (count %) 3) ["hi" "hello" "hey" "greetings"]) ["hello" "greetings"])
 (=check (my-filter #(and (even? %) (> % 10)) [12 2 13 14 3]) [12 14])
