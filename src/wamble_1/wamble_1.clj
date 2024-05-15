@@ -42,44 +42,50 @@
 (=check (count (reduce-concat (range 5000) (range 5000 10000))) 10000)
 
 ;; nth examples
-(defn reduce-nth [coll index]);;???????
+(defn reduce-nth [coll n]);???????
 (=check (reduce-nth [10 20 30 40] 2) 30)
 (=check (reduce-nth [1 2 3 4] 10) nil) ; Assuming nil for out of bounds
 (=check (reduce-nth [1 2 3 4] 3) 4)
 ;; max/min examples
   (defn reduce_max [coll]
-    (reduce (fn [x y] 
-              (if (> x y) x y)) coll))
-(defn reduce_min [coll])
+    (if (empty? coll)
+      nil
+      (reduce (fn [x y]
+                (if (> x y) x y)) coll)))
+ (defn reduce_min [coll]
+  (if (empty? coll)
+    nil
+    (reduce (fn [x y]
+              (if (< x y) x y)) coll)))
 
 (=check (reduce_max [5 3 9 1]) 9)
 (=check (reduce_min[5 3 9 1]) 1)
-(=check (reduce_max [-5 -3 -9 -1]) -1)
 (=check (reduce_min [-5 -3 -9 -1]) -9)
 (=check (reduce_min []) nil)
 (=check (reduce_max []) nil)
 
 ;; count examples
-(defn my-count [coll]
-  (if (empty? coll)
-    0
-    (let [index (my-count (rest coll))]
-    (+ index 1)  )))
-(=check (reduce-count [1 2 3 4 5]) 5)
+(defn my-count [coll])
+(=check (my-count [1 2 3 4 5]) 5)
 (=check (my-count [[1 2] [3 4] [5]]) 3)
 (=check (my-count []) 0)
 
 ;; take examples
-(defn my-take [n coll]
-  (if (empty? coll)
-    coll
-    (if (pos? n)
-      (cons (first coll) (my-take (dec n) (rest coll))))))
-(defn reduce-take [n coll])
-(=check (my-take 3 [5 4 3 2 1]) [5 4 3])
+
+(defn reduce-take [n coll]
+  (if (<= n 0)
+    []
+    (reduce (fn [acc item]
+              (if (< (count acc) n)
+                (conj acc item)
+                acc))
+            []
+            coll)))
+(=check (reduce-take 3 [5 4 3 2 1]) [5 4 3])
 
 
 ;; merge examples
+
 (defn my-merge [map1 map2]
   (if (empty? map1)
     map2

@@ -1,4 +1,4 @@
-(ns wamble_2.wamle_2)
+(ns wamble_2)
 (def result (atom {:correct 0 :incorrect 0}))
 (defmacro =check [left right]
   `(let [left# ~left
