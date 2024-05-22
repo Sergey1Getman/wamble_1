@@ -56,12 +56,12 @@
                    (fn [b]
                      (fn [c]
                        (fn [d]
-                         (* a b c d)))))) 1 2 3 4)[])
+                         (* a b c d)))))) 1 2 3 4)[24])
 (=check ((decurry (fn [a]
                     (fn [b]
                       (fn [c]
                         (fn [d]
-                          (+ a b c d)))))) 1 2 3 4) [])
+                          (+ a b c d)))))) 1 2 3 4) [10])
 (=check ((decurry (fn [a]
                     (fn [b]
-                      (* a b))))5 5)[])
+                      (* a b))))5 5)[25])
