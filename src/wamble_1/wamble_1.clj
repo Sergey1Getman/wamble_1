@@ -23,6 +23,11 @@
 (=check (my-reduce str "" ["a" "b" "c"]) "abc")
 (=check (my-reduce + 0 (range 10000)) 49995000)
 
+(defn another-filter [fun coll]
+  (reduce (fn [result item]
+            (if (fun item)
+              (conj result item)
+              result))[] coll))
 ;; filter examples
 (defn reduce-filter [f coll] 
   (reduce (fn [result item]
@@ -30,7 +35,7 @@
               (conj result item)
               result)) [] coll))
 (reduce-filter even? [1 2 3 4 5 6])
-(=check (reduce-filter even? [1 2 3 4 5 6]) [2 4 6])
+(=check (another-filter even? [1 2 3 4 5 6]) [2 4 6])
 (=check (reduce-filter #(> (count %) 3) ["hi" "hello" "hey" "greetings"]) ["hello" "greetings"])
 (=check (reduce-filter #(and (even? %) (> % 10)) [12 2 13 14 3]) [12 14])
 
@@ -42,10 +47,14 @@
 (=check (count (reduce-concat (range 5000) (range 5000 10000))) 10000)
 
 ;; nth examples
+(defn my-nth [coll n]
+  (if (= n 0)
+    (first coll)
+    (recur (rest coll) (dec n))))
 (defn reduce-nth [coll n]);???????
-(=check (reduce-nth [10 20 30 40] 2) 30)
-(=check (reduce-nth [1 2 3 4] 10) nil) ; Assuming nil for out of bounds
-(=check (reduce-nth [1 2 3 4] 3) 4)
+(=check (my-nth [10 20 30 40] 2) 30)
+(=check (my-nth [1 2 3 4] 10) nil) ; Assuming nil for out of bounds
+(=check (my-nth [1 2 3 4] 3) 4)
 ;; max/min examples
   (defn reduce_max [coll]
     (if (empty? coll)
@@ -65,7 +74,12 @@
 (=check (reduce_max []) nil)
 
 ;; count examples
-(defn my-count [coll])
+(defn my-count [coll]
+  (if (empty? coll) 
+    coll
+    (let [index (rest coll)]
+      (my-nth index (inc index)))
+    ))
 (=check (my-count [1 2 3 4 5]) 5)
 (=check (my-count [[1 2] [3 4] [5]]) 3)
 (=check (my-count []) 0)
@@ -83,6 +97,12 @@
             coll)))
 (=check (reduce-take 3 [5 4 3 2 1]) [5 4 3])
 
+(defn let-merge[map1 map2]
+  (if (empty? map2)
+    map1
+    (let [[k v] (first map2)
+          {:keys (first-key)} (first map2)]
+      (let-merge (assoc map1 first-key v) (rest map2)))))
 
 ;; merge examples
 
@@ -91,10 +111,9 @@
     map2
     (reduce (fn [result-map [key value]]
               (assoc result-map key value)) map1 map2)))
-(=check (my-merge {:a 1 :b 2} {:b 3 :c 4}) {:a 1 :b 3 :c 4})
-(=check (my-merge {:foo "bar"} {:foo "baz", :hello "world"}) {:foo "baz", :hello "world"})
-(=check (my-merge {} {:a 1}) {:a 1})
-group-by
+(=check (let-merge {:a 1 :b 2} {:b 3 :c 4}) {:a 1 :b 3 :c 4})
+(=check (let-merge {:foo "bar"} {:foo "baz", :hello "world"}) {:foo "baz", :hello "world"})
+(=check (let-merge {} {:a 1}) {:a 1})
 
 ;; group-by examples
 (defn my-group-by [f coll]
@@ -125,10 +144,24 @@ group-by
 (=check (my-vals {:foo "bar" :baz "qux"}) ["bar" "qux"])
 (=check (my-vals {}) [])
 
-;; select-keys examples
+(defn my-map [fun coll]
+  (if (empty? coll)
+    coll
+    (cons (fun (first coll)) (my-map fun (rest coll)))))
+(=check (my-map inc [10 20 30])[11 21 31])
 
-(defn my-select-keys [map keys];;?????????
-  (reduce (fn [ret keyseq]) map keys))
+[+ max min] 
+(apply max [1 2 3 5])
+(defn my-juxt [& funs coll]
+  (if (empty? coll)
+    coll
+    (let [list funs]
+      (recur (apply (first list) coll) (rest)))))
+
+(my-juxt + max min [1 2 3 4])
+;; select-keys examples
+select-keys
+(defn my-select-keys [map keys])
 (=check (my-select-keys {:a 1 :b 2 :c 3} [:a :c]) {:a 1 :c 3})
 (=check (my-select-keys {:name "Alice" :age 30 :gender "Female"} [:name :age]) {:name "Alice", :age 30})
 (=check (my-select-keys {:foo "bar" :hello "world"} [:foo]) {:foo "bar"})
