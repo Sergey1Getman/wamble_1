@@ -97,16 +97,7 @@
   (:treated patient))
 (for [patient all-patients]
   (:diagnosis patient))
-(defmacro my-factor-group [all-patients]
-  (let [treated? :treated
-        disease-name :diagnosis]
-    (if (empty? all-patients)
-      1
-      (for [patient all-patients]
-         (println " начало обработки группы пациентов с диагнозом " disease-name
-                 (if treated? ", подвергавшихся лечению"
-                     ", НЕ подвергавшихся лечению"))
-        ))))
+
 
 (defmacro factor-group [all-patients]
   `(let [grouped-patients# (group-by #(vector (:diagnosis %) (:treated %)) ~all-patients)]
