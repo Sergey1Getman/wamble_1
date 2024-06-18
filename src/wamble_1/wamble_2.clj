@@ -107,23 +107,7 @@
                  (if treated? ", подвергавшихся лечению"
                      ", НЕ подвергавшихся лечению"))
         ))))
-(defmacro my-factor-group [all-patients]
-  `(let [treated-key# :treated
-         disease-name-key# :diagnosis
-         surname-key# :lastname]
-     (if (empty? ~all-patients)
-       (println "No patients to process.")
-       (doseq [patient# ~all-patients]
-         (let [treated?# (get patient# treated-key#)
-               disease-name# (get patient# disease-name-key#)
-               surname# (get patient# surname-key#)
-               treated-list# ()
-               surname-list# ()
-               disease-list# ()]
-           
-             (cond
-               (if (= disease-name "COVID-19")
-                 )))))))
+
 (defmacro factor-group [all-patients]
   `(let [grouped-patients# (group-by #(vector (:diagnosis %) (:treated %)) ~all-patients)]
      (if (empty? ~all-patients)
