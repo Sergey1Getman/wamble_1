@@ -65,3 +65,78 @@
 (=check ((decurry (fn [a]
                     (fn [b]
                       (* a b))))5 5)[25])
+
+
+(def all-patients
+  '({:firstname "Adam"
+     :lastname  "Smith"
+     :diagnosis "COVID-19"
+     :treated   true}
+    {:firstname "Joseph"
+     :lastname  "Goodman"
+     :diagnosis "COVID-19"
+     :treated   true}
+    {:firstname "Werner"
+     :lastname  "Ziegler"
+     :diagnosis "COVID-19"
+     :treated   false}
+    {:firstname "Boris"
+     :lastname  "Henry"
+     :diagnosis "Healthy"
+     :treated   false}
+    {:firstname "Johnny"
+     :lastname  "Grayhand"
+     :diagnosis "COVID-76"
+     :treated   false})
+  )
+(for [patient all-patients]
+  (:diagnosis patient))
+(for [patient all-patients]
+  (:lastname patient))
+(for [patient all-patients]
+  (:treated patient))
+(for [patient all-patients]
+  (:diagnosis patient))
+(defmacro my-factor-group [all-patients]
+  (let [treated? :treated
+        disease-name :diagnosis]
+    (if (empty? all-patients)
+      1
+      (for [patient all-patients]
+         (println " начало обработки группы пациентов с диагнозом " disease-name
+                 (if treated? ", подвергавшихся лечению"
+                     ", НЕ подвергавшихся лечению"))
+        ))))
+(defmacro my-factor-group [all-patients]
+  `(let [treated-key# :treated
+         disease-name-key# :diagnosis
+         surname-key# :lastname]
+     (if (empty? ~all-patients)
+       (println "No patients to process.")
+       (doseq [patient# ~all-patients]
+         (let [treated?# (get patient# treated-key#)
+               disease-name# (get patient# disease-name-key#)
+               surname# (get patient# surname-key#)
+               treated-list# ()
+               surname-list# ()
+               disease-list# ()]
+           
+             (cond
+               (if (= disease-name "COVID-19")
+                 )))))))
+(defmacro factor-group [all-patients]
+  `(let [grouped-patients# (group-by #(vector (:diagnosis %) (:treated %)) ~all-patients)]
+     (if (empty? ~all-patients)
+       (println "No patients to process.")
+       (doseq [[key# patients-group#] grouped-patients#]
+         (let [disease-name# (first key#)
+               treated?# (second key#)
+               surnames# (map :lastname patients-group#)]
+           (println "Начало обработки группы пациентов с диагнозом" disease-name#
+                    (if treated?# ", подвергавшихся лечению"
+                        ", НЕ подвергавшихся лечению"))
+           (println "Количество пациентов в группе - " (count surnames#))
+           (println "Фамилии пациентов - " (clojure.string/join ", " surnames#)
+                     ))))))
+
+(factor-group all-patients)

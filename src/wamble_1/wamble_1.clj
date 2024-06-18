@@ -1,5 +1,6 @@
 (ns wamble-1.wamble-1)
 
+
 (def result (atom {:correct 0 :incorrect 0}))
 (defmacro =check [left right]
   `(let [left# ~left
@@ -36,6 +37,7 @@
               result)) [] coll))
 (reduce-filter even? [1 2 3 4 5 6])
 (=check (another-filter even? [1 2 3 4 5 6]) [2 4 6])
+
 (=check (reduce-filter #(> (count %) 3) ["hi" "hello" "hey" "greetings"]) ["hello" "greetings"])
 (=check (reduce-filter #(and (even? %) (> % 10)) [12 2 13 14 3]) [12 14])
 
@@ -73,16 +75,7 @@
 (=check (reduce_min []) nil)
 (=check (reduce_max []) nil)
 
-;; count examples
-(defn my-count [coll]
-  (if (empty? coll) 
-    coll
-    (let [index (rest coll)]
-      (my-nth index (inc index)))
-    ))
-(=check (my-count [1 2 3 4 5]) 5)
-(=check (my-count [[1 2] [3 4] [5]]) 3)
-(=check (my-count []) 0)
+
 
 ;; take examples
 
@@ -152,18 +145,24 @@
 
 [+ max min] 
 (apply max [1 2 3 5])
-(defn my-juxt [& funs coll]
-  (if (empty? coll)
-    coll
-    (let [list funs]
-      (recur (apply (first list) coll) (rest)))))
 
-(my-juxt + max min [1 2 3 4])
-;; select-keys examples
 select-keys
 (defn my-select-keys [map keys])
 (=check (my-select-keys {:a 1 :b 2 :c 3} [:a :c]) {:a 1 :c 3})
 (=check (my-select-keys {:name "Alice" :age 30 :gender "Female"} [:name :age]) {:name "Alice", :age 30})
 (=check (my-select-keys {:foo "bar" :hello "world"} [:foo]) {:foo "bar"})
-
+next
+flatten
+(defn my-flatten [args]
+  (if (sequential? args)
+    (mapcat my-flatten args)
+    [args]))
+(my-flatten [1 2 3 4])
+(defn isUpperCase [string]
+  (if (empty? string)
+    nil
+    (str string
+         (if (Character/isUpperCase string)
+           (print "ok")))))
+(isUpperCase ["HeLLo WoRLd"]) 
 (println "Test results:" @result)
